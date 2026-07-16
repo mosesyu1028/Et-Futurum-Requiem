@@ -1,30 +1,27 @@
-package ganymedes01.etfuturum.blocks.itemblocks;
+package ganymedes01.etfuturum.mixins.early.signs;
 
-import ganymedes01.etfuturum.EtFuturum;
-import ganymedes01.etfuturum.blocks.BlockWoodSign;
 import ganymedes01.etfuturum.configuration.configs.ConfigSounds;
-import ganymedes01.etfuturum.network.WoodSignOpenMessage;
-import ganymedes01.etfuturum.tileentities.TileEntityWoodSign;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemSign;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
-public class ItemBlockSign extends ItemBlock {
-	public ItemBlockSign(Block sign) {
-		super(sign);
-		if (!(sign instanceof BlockWoodSign)) {
-			throw new IllegalArgumentException("ItemBlockSign block must be instance of BlockWoodSign!");
-		}
-	}
+@Mixin(ItemSign.class)
+public class MixinItemSign {
+    /**
+     * @author mosesyu1028
+     * @reason Fixes vanilla sign placement to allow replacing replaceable blocks
+     * (snow layers, tall grass, vines, dead bushes, etc.) matching ItemBlock behavior.
+     */
 
-	@Override
-	public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
-
+	@Overwrite
+	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
 		if (side == 0) {
 			return false;
 		}
@@ -52,24 +49,29 @@ public class ItemBlockSign extends ItemBlock {
 			side = 1;
 		}
 
+		// When placing a standing sign, verify the block below has a solid top surface
 		if (side == 1 && !World.doesBlockHaveSolidTopSurface(world, x, y - 1, z)) {
 			return false;
 		}
 
-		if (!player.canPlayerEdit(x, y, z, side, itemStack)) {
+		if (!player.canPlayerEdit(x, y, z, side, stack)) {
 			return false;
-		} else if (!Blocks.standing_sign.canPlaceBlockAt(world, x, y, z)) {
+		}
+		else if (!Blocks.standing_sign.canPlaceBlockAt(world, x, y, z)) {
 			return false;
-		} else if (world.isRemote) {
+		}
+		else if (world.isRemote) {
 			return true;
-		} else {
+		}
+		else {
 			Block block;
 			if (side == 1) {
-				int i1 = MathHelper.floor_double((player.rotationYaw + 180.0F) * 16.0F / 360.0F + 0.5D) & 15;
-				block = field_150939_a; // blockInstance
-				world.setBlock(x, y, z, block, i1, 3);
-			} else {
-				block = ((BlockWoodSign) field_150939_a/*blockInstance*/).getWallSign();
+				int rotation = MathHelper.floor_double((player.rotationYaw + 180.0F) * 16.0F / 360.0F + 0.5D) & 15;
+				block = Blocks.standing_sign;
+				world.setBlock(x, y, z, block, rotation, 3);
+			}
+			else {
+				block = Blocks.wall_sign;
 				world.setBlock(x, y, z, block, side, 3);
 			}
 
@@ -77,12 +79,11 @@ public class ItemBlockSign extends ItemBlock {
 			if (ConfigSounds.fixSilentPlacing)
 				world.playSoundEffect((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F, block.stepSound.func_150496_b()/*getPlaceSound*/, (block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
 
-			--itemStack.stackSize;
-			TileEntityWoodSign tileentitysign = (TileEntityWoodSign) world.getTileEntity(x, y, z);
+			--stack.stackSize;
+			TileEntitySign tileentitysign = (TileEntitySign) world.getTileEntity(x, y, z);
 
 			if (tileentitysign != null) {
-				tileentitysign.func_145912_a(player);
-				EtFuturum.networkWrapper.sendTo(new WoodSignOpenMessage(tileentitysign, Block.getIdFromBlock(block), true), (EntityPlayerMP) player);
+				player.func_146100_a(tileentitysign);
 			}
 			return true;
 		}
