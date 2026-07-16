@@ -232,6 +232,11 @@ public class EtFuturumEarlyMixins implements IFMLLoadingPlugin, IEarlyMixinLoade
 			mixins.add("signs.MixinTileEntitySignRenderer");
 		}
 
+		if (ConfigMixins.snowReplaceableFix) {
+			mixins.add("snow.MixinBlockSnow");
+			mixins.add("snow.MixinItemSnow");
+		}
+
 		if (ConfigMixins.betterPistons) {
 			mixins.add("backinslime.MixinBlockPistonBase");
 		}

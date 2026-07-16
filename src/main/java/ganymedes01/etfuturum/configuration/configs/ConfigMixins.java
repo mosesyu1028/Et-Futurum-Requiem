@@ -38,6 +38,7 @@ public class ConfigMixins extends ConfigBase {
 	public static boolean postTreeGenEvent;
 	public static boolean ladderTrapdoors;
 	public static boolean signs;
+	public static boolean snowReplaceableFix;
 	public static boolean betterPistons;
 	public static boolean flowerPotFixes;
 	public static boolean soulFire;
@@ -108,6 +109,7 @@ public class ConfigMixins extends ConfigBase {
 		postTreeGenEvent = getBoolean("postTreeGenEvent", catBackport, true, "Fires an event after a tree generates, mainly for beehives to accurately know where most trees are. For now this option is disabled if bees are disabled.\nModified Classes: net.minecraft.world.gen.feature.WorldGenAbstractTree");
 		ladderTrapdoors = getBoolean("ladderTrapdoors", catBackport, true, "Trapdoors that are clapped open against a block with a ladder below them can be climbed up as if they themselves were a ladder. Also expands the ladder hitbox to match the width of trapdoors.\nModified Classes: net.minecraft.block.BlockLadder net.minecraft.block.BlockTrapdoor");
 		signs = getBoolean("signs", catBackport, true, "Allows signs to inerhit modern features (editing, double sided, waxing).\nModified Classes: net.minecraft.block.BlockSign net.minecraft.item.ItemSign net.minecraft.tileentity.TileEntitySign net.minecraft.client.renderer.tileentity.TileEntitySignRenderer");
+		snowReplaceableFix = getBoolean("snowReplaceableFix", catBackport, true, "Makes snow only overwritable by other blocks when it's a single layer (matching modern MC). Snow can still stack on itself.\nModified Classes: net.minecraft.block.BlockSnow net.minecraft.item.ItemSnow");
 		enableElytra = getBoolean("enableElytra", catBackport, true, "A port of Backlytra with various fixes. The original author of this is unascribed: https://legacy.curseforge.com/minecraft/mc-mods/backlytra\nIf you're getting crash related to the DataWatcher, try changing \"elytraDataWatcherFlag\" in functions.cfg and don't open an issue if changing that value fixes it." +
 				"\nModified Classes: net.minecraft.entity.EntityLivingBase net.minecraft.entity.player.EntityPlayer net.minecraft.entity.EntityTrackerEntry net.minecraft.network.NetHandlerPlayServer" +
 				"\nModified Client Classes: net.minecraft.client.entity.AbstractClientPlayer net.minecraft.client.entity.EntityPlayerSP net.minecraft.client.model.ModelBiped net.minecraft.client.renderer.entity.RenderPlayer" +
