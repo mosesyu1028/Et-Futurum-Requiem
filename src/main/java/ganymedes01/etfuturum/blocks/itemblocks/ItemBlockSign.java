@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -17,6 +18,7 @@ import net.minecraft.world.World;
 public class ItemBlockSign extends ItemBlock {
 	public ItemBlockSign(Block sign) {
 		super(sign);
+		this.maxStackSize = Items.sign.getItemStackLimit(new ItemStack(Items.sign));
 		if (!(sign instanceof BlockWoodSign)) {
 			throw new IllegalArgumentException("ItemBlockSign block must be instance of BlockWoodSign!");
 		}
@@ -31,10 +33,7 @@ public class ItemBlockSign extends ItemBlock {
 
 		Block clickedBlock = world.getBlock(x, y, z);
 
-		if (clickedBlock == Blocks.snow_layer && (world.getBlockMetadata(x, y, z) & 7) < 1) {
-			side = 1;
-		}
-		else if (clickedBlock != Blocks.vine && clickedBlock != Blocks.tallgrass && clickedBlock != Blocks.deadbush && !clickedBlock.isReplaceable(world, x, y, z)) {
+		if (clickedBlock != Blocks.vine && clickedBlock != Blocks.tallgrass && clickedBlock != Blocks.deadbush && !clickedBlock.isReplaceable(world, x, y, z)) {
 			if (!clickedBlock.getMaterial().isSolid()) {
 				return false;
 			}
